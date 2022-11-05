@@ -1,5 +1,6 @@
 import { openai } from "../bootstrap/openai.js";
 import fs from "fs";
+import fetch from "node-fetch";
 
 export const generateImage = async (prompt, number = 1, size = "1024x1024") => {
   try {
