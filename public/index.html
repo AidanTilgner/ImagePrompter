@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OpenAI Image Generator</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+      crossorigin="anonymous"
+    ></script>
+    <style>
+      .output-image {
+        width: 100%;
+        height: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container d-flex flex-column justify-content-center">
+      <br />
+      <h1 class="my-4">OpenAI Image Generator</h1>
+      <br />
+      <div class="my-5">
+        <label for="prompt" class="form-label">Prompt</label>
+        <input
+          id="prompt"
+          type="text"
+          placeholder="prompt"
+          class="form-control"
+        />
+      </div>
+      <button class="btn btn-primary" id="submit">Generate</button>
+      <br />
+      <br />
+      <div id="spinner" class="spinner-border my-4 text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <div id="output">
+        <hr />
+        <a href="#" id="url" target="_blank"></a>
+        <hr />
+        <div class="container-fluid">
+          <img id="output-image" src="" alt="" class="output-image" />
+        </div>
+      </div>
+    </div>
+    <script>
+      const output = document.getElementById("output");
+      output.style.display = "none";
+      const prompt = document.getElementById("prompt");
+      const spinner = document.getElementById("spinner");
+      spinner.style.display = "none";
+
+      const submitPrompt = () => {
+        spinner.style.display = "block";
+        fetch("/api/images", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ prompt: prompt.value }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+            document.getElementById("url").href = data.url;
+            spinner.style.display = "none";
+            output.style.display = "block";
+            document.getElementById("url").innerText = "Link to new image";
+            document.getElementById("output-image").src = data.url;
+          });
+      };
+      prompt.addEventListener("keyup", (e) => {
+        if (e.key === "Enter") {
+          submitPrompt();
+        }
+      });
+
+      document.getElementById("submit").addEventListener("click", () => {
+        submitPrompt();
+      });
+    </script>
+  </body>
+</html>
